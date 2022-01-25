@@ -1,10 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
 import YamlConverter from 'js-yaml';
+import { ErrorBoundary } from 'react-error-boundary';
 import DataToJsxCompilerV1 from './DataToJsxCompilerV1';
 var customElements = {};
 function RenderLayout(_a) {
-    var yamlText = _a.yamlText, jsonText = _a.jsonText, VersionNotSupported = _a.versionNotSupported, onErrorRender = _a.onErrorRender;
+    var yamlText = _a.yamlText, jsonText = _a.jsonText, versionNotSupported = _a.versionNotSupported, onErrorRender = _a.onErrorRender;
     try {
         if (!yamlText && !jsonText) {
             return <View />;
@@ -21,13 +22,18 @@ function RenderLayout(_a) {
         }
         switch (data.version) {
             case 'v1':
-                return <DataToJsxCompilerV1 data={data.root} customElements={customElements}/>;
+                return (<ErrorBoundary FallbackComponent={function (_a) {
+                    var error = _a.error;
+                    return (onErrorRender ? onErrorRender(error) : <View />);
+                }}>
+                        <DataToJsxCompilerV1 data={data.root} customElements={customElements}/>
+                    </ErrorBoundary>);
             default:
-                return VersionNotSupported ? VersionNotSupported : <View />;
+                return versionNotSupported ? versionNotSupported(data.version) : <View />;
         }
     }
     catch (error) {
-        return onErrorRender(error);
+        return onErrorRender ? onErrorRender(error) : <View />;
     }
 }
 export function setCustomElements(elements) {

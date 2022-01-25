@@ -13,7 +13,8 @@
         "render"
     ],
     "dependencies": {
-        "js-yaml": "^4.1.0"
+        "js-yaml": "^4.1.0",
+        "react-error-boundary": "^3.1.4"
     },
     "peerDependencies": {
         "react": "*",
@@ -23,10 +24,10 @@
         "build": "tsc --build"
     },
     "devDependencies": {
+        "@babel/preset-typescript": "*",
         "@types/js-yaml": "^4.0.5",
         "@types/react": "*",
         "@types/react-native": "*",
-        "@babel/preset-typescript": "*",
         "typescript": "^4.1.2"
     }
 }

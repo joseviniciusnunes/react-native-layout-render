@@ -11,31 +11,20 @@ var __assign = (this && this.__assign) || function () {
 };
 import React from 'react';
 import ReactNativeAll from 'react-native';
-import { View } from 'react-native';
 var customElements = {};
 function DataToJsxCompilerV1(_a) {
     var data = _a.data, customElementsProp = _a.customElements;
     customElements = customElementsProp !== null && customElementsProp !== void 0 ? customElementsProp : {};
-    return compileComponent(data);
+    return compileComponent(data, undefined);
 }
 function compileComponent(el, key) {
-    var _a, _b;
-    var customElement = getCustomElement(el.type);
+    var _a;
+    var customElement = getCustomElement(el === null || el === void 0 ? void 0 : el.type);
     if (customElement) {
-        return customElement(__assign(__assign({}, ((_a = el.props) !== null && _a !== void 0 ? _a : {})), { key: key }), generateChildren(el));
+        return customElement(__assign(__assign({}, ((_a = el === null || el === void 0 ? void 0 : el.props) !== null && _a !== void 0 ? _a : {})), { key: key }), generateChildren(el));
     }
-    var elementNative = getReactNativeElement(el.type);
-    if (elementNative) {
-        return React.createElement(elementNative, __assign(__assign({}, el.props), { key: key }), generateChildren(el));
-    }
-    else {
-        var style = (_b = el === null || el === void 0 ? void 0 : el.props) === null || _b === void 0 ? void 0 : _b.style;
-        if (!style) {
-            style = {};
-        }
-        style = __assign(__assign({}, style), { backgroundColor: 'red' });
-        return <View {...el.props} key={key} style={style}/>;
-    }
+    var elementNative = getReactNativeElement(el === null || el === void 0 ? void 0 : el.type);
+    return React.createElement(elementNative, __assign(__assign({}, el === null || el === void 0 ? void 0 : el.props), { key: key }), generateChildren(el));
 }
 function getCustomElement(key) {
     var keysCustom = Object.keys(customElements);
@@ -49,9 +38,8 @@ function getCustomElement(key) {
 }
 function getReactNativeElement(key) {
     var element = ReactNativeAll[key];
-    console.log('element', element);
     if (!element) {
-        throw new Error("Element \"" + key + "\" not exists in react-native");
+        throw new Error("Element \"" + key + "\" not exists in react-native or custom element");
     }
     return element;
 }

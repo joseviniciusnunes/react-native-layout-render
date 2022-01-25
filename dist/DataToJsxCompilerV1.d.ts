@@ -1,5 +1,7 @@
 /// <reference types="react" />
-import { TypeCustomElements } from '.';
+export declare type TypeCustomElements = {
+    [key: string]: (props: any, children?: JSX.Element[] | string) => JSX.Element;
+};
 export interface IUniqueElementDataProps {
     type: string;
     props: any;

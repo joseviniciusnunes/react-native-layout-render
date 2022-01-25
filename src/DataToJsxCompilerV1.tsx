@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactNativeAll from 'react-native';
-import { View } from 'react-native';
 
-import { TypeCustomElements } from '.';
+export type TypeCustomElements = {
+    [key: string]: (props: any, children?: JSX.Element[] | string) => JSX.Element;
+};
 
 export interface IUniqueElementDataProps {
     type: string;
@@ -19,26 +20,16 @@ let customElements: TypeCustomElements = {};
 
 function DataToJsxCompilerV1({ data, customElements: customElementsProp }: IDataToJsxCompilerV1Props): JSX.Element {
     customElements = customElementsProp ?? {};
-    return compileComponent(data);
+    return compileComponent(data, undefined);
 }
 
 function compileComponent(el: IUniqueElementDataProps, key?: string): JSX.Element {
-    const customElement = getCustomElement(el.type);
+    const customElement = getCustomElement(el?.type);
     if (customElement) {
-        return customElement({ ...(el.props ?? {}), key }, generateChildren(el));
+        return customElement({ ...(el?.props ?? {}), key }, generateChildren(el));
     }
-
-    const elementNative = getReactNativeElement(el.type);
-    if (elementNative) {
-        return React.createElement(elementNative, { ...el.props, key }, generateChildren(el));
-    } else {
-        let style = el?.props?.style;
-        if (!style) {
-            style = {};
-        }
-        style = { ...style, backgroundColor: 'red' };
-        return <View {...el.props} key={key} style={style} />;
-    }
+    const elementNative = getReactNativeElement(el?.type);
+    return React.createElement(elementNative, { ...el?.props, key }, generateChildren(el));
 }
 
 function getCustomElement(key: string) {
@@ -51,11 +42,10 @@ function getCustomElement(key: string) {
     return null;
 }
 
-function getReactNativeElement(key: string): any {
+function getReactNativeElement(key: string) {
     const element = ReactNativeAll[key];
-    console.log('element', element);
     if (!element) {
-        throw new Error(`Element "${key}" not exists in react-native`);
+        throw new Error(`Element "${key}" not exists in react-native or custom element`);
     }
     return element;
 }

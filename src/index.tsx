@@ -1,23 +1,20 @@
 import React from 'react';
 import { View } from 'react-native';
 import YamlConverter from 'js-yaml';
+import { ErrorBoundary } from 'react-error-boundary';
 
-import DataToJsxCompilerV1, { IUniqueElementDataProps } from './DataToJsxCompilerV1';
+import DataToJsxCompilerV1, { IUniqueElementDataProps, TypeCustomElements } from './DataToJsxCompilerV1';
 
 export interface IElementRoot {
     version: string;
     root: IUniqueElementDataProps;
 }
 
-export type TypeCustomElements = {
-    [key: string]: (props: any, children?: JSX.Element[] | string) => JSX.Element;
-};
-
 export interface IElementDataProps {
     yamlText?: string;
     jsonText?: string;
-    versionNotSupported?: JSX.Element;
-    onErrorRender: (error: Error) => JSX.Element;
+    versionNotSupported?: (version: string) => JSX.Element;
+    onErrorRender?: (error: Error) => JSX.Element;
 }
 
 export interface ICustomElementProps {
@@ -27,7 +24,7 @@ export interface ICustomElementProps {
 
 let customElements: TypeCustomElements = {};
 
-function RenderLayout({ yamlText, jsonText, versionNotSupported: VersionNotSupported, onErrorRender }: IElementDataProps): JSX.Element {
+function RenderLayout({ yamlText, jsonText, versionNotSupported, onErrorRender }: IElementDataProps): JSX.Element {
     try {
         if (!yamlText && !jsonText) {
             return <View />;
@@ -47,12 +44,17 @@ function RenderLayout({ yamlText, jsonText, versionNotSupported: VersionNotSuppo
 
         switch (data.version) {
             case 'v1':
-                return <DataToJsxCompilerV1 data={data.root} customElements={customElements} />;
+                return (
+                    <ErrorBoundary FallbackComponent={({ error }) => (onErrorRender ? onErrorRender(error) : <View />)}>
+                        <DataToJsxCompilerV1 data={data.root} customElements={customElements} />
+                    </ErrorBoundary>
+                );
+
             default:
-                return VersionNotSupported ? VersionNotSupported : <View />;
+                return versionNotSupported ? versionNotSupported(data.version) : <View />;
         }
     } catch (error) {
-        return onErrorRender(error);
+        return onErrorRender ? onErrorRender(error) : <View />;
     }
 }
 
