@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/22475804/151039878-d38a4131-4242-4a8b-ac11-d687dfd57abf.png" height="200px" />
+  <img src="https://user-images.githubusercontent.com/22475804/151048221-3ca00d76-feeb-478f-883a-8b8a6fbce6b4.png" height="200px" />
   <h1 align="center">React Native Layout Render</h1>
 </p>
 
