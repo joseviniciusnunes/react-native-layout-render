@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactNativeAll from 'react-native';
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View } from 'react-native';
 
 import { TypeCustomElements } from '.';
 

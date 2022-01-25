@@ -1,14 +1,15 @@
 /// <reference types="react" />
-import { IUniqueElementYamlProps } from './YamlToJsxCompilerV1';
+import { IUniqueElementDataProps } from './DataToJsxCompilerV1';
 export interface IElementRoot {
     version: string;
-    root: IUniqueElementYamlProps;
+    root: IUniqueElementDataProps;
 }
 export declare type TypeCustomElements = {
     [key: string]: (props: any, children?: JSX.Element[] | string) => JSX.Element;
 };
-export interface IElementYamlProps {
-    yamlText: string;
+export interface IElementDataProps {
+    yamlText?: string;
+    jsonText?: string;
     versionNotSupported?: JSX.Element;
     onErrorRender: (error: Error) => JSX.Element;
 }
@@ -16,6 +17,6 @@ export interface ICustomElementProps {
     props: any;
     children?: JSX.Element[] | string;
 }
-declare function RenderYaml({ yamlText, versionNotSupported: VersionNotSupported, }: IElementYamlProps): JSX.Element;
+declare function RenderLayout({ yamlText, jsonText, versionNotSupported: VersionNotSupported, onErrorRender }: IElementDataProps): JSX.Element;
 export declare function setCustomElements(elements: TypeCustomElements): void;
-export default RenderYaml;
+export default RenderLayout;
