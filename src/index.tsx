@@ -1,20 +1,21 @@
 import React from 'react';
-import {View} from 'react-native';
+import { View } from 'react-native';
 import YamlConverter from 'js-yaml';
 
-import YamlToJsxCompilerV1, {IUniqueElementYamlProps} from './YamlToJsxCompilerV1';
+import DataToJsxCompilerV1, { IUniqueElementDataProps } from './DataToJsxCompilerV1';
 
 export interface IElementRoot {
     version: string;
-    root: IUniqueElementYamlProps;
+    root: IUniqueElementDataProps;
 }
 
 export type TypeCustomElements = {
     [key: string]: (props: any, children?: JSX.Element[] | string) => JSX.Element;
 };
 
-export interface IElementYamlProps {
-    yamlText: string;
+export interface IElementDataProps {
+    yamlText?: string;
+    jsonText?: string;
     versionNotSupported?: JSX.Element;
     onErrorRender: (error: Error) => JSX.Element;
 }
@@ -26,24 +27,32 @@ export interface ICustomElementProps {
 
 let customElements: TypeCustomElements = {};
 
-function RenderYaml({
-    yamlText,
-    versionNotSupported: VersionNotSupported,
-}: IElementYamlProps): JSX.Element {
-    if (!yamlText) {
-        return <View />;
-    }
+function RenderLayout({ yamlText, jsonText, versionNotSupported: VersionNotSupported, onErrorRender }: IElementDataProps): JSX.Element {
+    try {
+        if (!yamlText && !jsonText) {
+            return <View />;
+        }
 
-    const data: IElementRoot = YamlConverter.load(yamlText) as any;
+        let data: IElementRoot | null = null;
 
-    if (!data.version || !data.root) {
-        return <View />;
-    }
-    switch (data.version) {
-        case 'v1':
-            return <YamlToJsxCompilerV1 data={data.root} customElements={customElements} />;
-        default:
-            return VersionNotSupported ? VersionNotSupported : <View />;
+        if (yamlText) {
+            data = YamlConverter.load(yamlText) as any;
+        } else if (jsonText) {
+            data = JSON.parse(jsonText);
+        }
+
+        if (!data?.version || !data?.root) {
+            return <View />;
+        }
+
+        switch (data.version) {
+            case 'v1':
+                return <DataToJsxCompilerV1 data={data.root} customElements={customElements} />;
+            default:
+                return VersionNotSupported ? VersionNotSupported : <View />;
+        }
+    } catch (error) {
+        return onErrorRender(error);
     }
 }
 
@@ -51,4 +60,4 @@ export function setCustomElements(elements: TypeCustomElements) {
     customElements = elements;
 }
 
-export default RenderYaml;
+export default RenderLayout;
